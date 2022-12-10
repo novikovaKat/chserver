@@ -30,43 +30,45 @@ public class ClientThread implements Runnable{
     @Override
     public void run() {
         
-        BufferedReader in = null;
+        BufferedReader in = null;     
+            
         try {
-            
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            System.out.println("Client " + numberClient + " has been connected");
-            String clientMessage;
-            
-            try {
-                new PrintWriter(clientSocket.getOutputStream(), true).println("Client " + numberClient);
-            } catch (IOException ex) {
-                throw new RuntimeException("in printWriter");
-            }
-            
-            while(true){
-                
-                try {
-                    clientMessage = in.readLine(); 
-                    System.out.println();
-                    
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }  
-                
-                if(!clientMessage.equals("exit")){
-                        System.out.println("Client " + numberClient + ": " + clientMessage);            
-                        chatServer.sendMessageForAllClients(numberClient, clientMessage);                        
-                }
-                else{
-                    in.close();
-                    clientSocket.close();
-                    break;
-                }
-            }            
-            
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
-    }
-    
+        
+        System.out.println("Client " + numberClient + " has been connected");
+        String clientMessage;
+
+        try {
+            new PrintWriter(clientSocket.getOutputStream(), true).println("Client " + numberClient);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        while(true){
+
+            try {
+                clientMessage = in.readLine(); 
+                System.out.println();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }  
+
+            if(!clientMessage.equals("exit")){
+                System.out.println("Client " + numberClient + ": " + clientMessage);            
+                chatServer.sendMessageForAllClients(numberClient, clientMessage);                        
+            }
+            else{
+                try {
+                    in.close();
+                    clientSocket.close();
+                    break;
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }           
+    }    
 }
